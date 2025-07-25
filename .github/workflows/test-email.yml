@@ -2,41 +2,38 @@ name: Run Tests and Email on Failure
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - staging
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Run tests
         run: |
           echo "Running tests..."
-          exit 1  # Simulate test failure (you can replace this later)
+          exit 1  # ❌ Simulates a failed test
 
   notify-on-failure:
+    if: failure()   # ✅ Only runs if test job fails
     needs: test
-    if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
-      - name: Send email on failure
+      - name: Send email
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: "❌ Tests Failed in ${{ github.repository }}"
+          subject: 🚨 Tests Failed on ${{ github.repository }}
           body: |
-            🚨 Tests failed on branch: ${{ github.ref }}
-            Commit: ${{ github.sha }}
-            Author: ${{ github.actor }}
-            Commit message: ${{ github.event.head_commit.message }}
+            ❌ Tests failed on commit: ${{ github.sha }}
+            View: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: your-email@example.com
+          from: GitHub Actions
 
-          to: ${{ secrets.EMAIL_RECEIVER }}
-          from: ${{ secrets.EMAIL_USERNAME }}
+            
 
