@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    continue-on-error: true  # Allows next job to run even if this fails
+    continue-on-error: true  # Let workflow continue even if test fails
 
     steps:
       - name: Checkout code
@@ -19,11 +19,11 @@ jobs:
       - name: Run tests
         run: |
           echo "Running tests..."
-          exit 1  # ❌ Simulates a failed test
+          exit 1  # ❌ Simulate a failed test (replace with real tests)
 
   notify-on-failure:
     needs: test
-    if: ${{ failure() }}  # ✅ Only runs if 'test' job fails
+    if: ${{ failure() }}  # Run only if 'test' job fails
     runs-on: ubuntu-latest
 
     steps:
@@ -40,6 +40,6 @@ jobs:
             Commit: ${{ github.sha }}
             Author: ${{ github.actor }}
             Message: ${{ github.event.head_commit.message }}
-            👉 View Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            👉 View run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           to: ${{ secrets.EMAIL_RECEIVER }}
           from: ${{ secrets.EMAIL_USERNAME }}
